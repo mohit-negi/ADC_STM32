@@ -45,8 +45,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # Linker
 LDSCRIPT = STM32F103C6.ld
 LIBS = -lc -lm -lnosys 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
-
+LDFLAGS = $(MCU) -specs=nano.specs -T STM32F103C6.ld $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -nostartfiles
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex
 
 # Build Rules
