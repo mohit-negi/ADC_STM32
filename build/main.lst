@@ -1,0 +1,274 @@
+ARM GAS  /tmp/ccOhnMiS.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.cpp"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.file 1 "main.cpp"
+  18              		.section	.text._init,"ax",%progbits
+  19              		.align	1
+  20              		.global	_init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	_init:
+  26              		.fnstart
+  27              	.LFB2:
+   1:main.cpp      **** #include <cstdint>
+   2:main.cpp      **** 
+   3:main.cpp      **** // --- 1. REGISTER DEFINITIONS (Extracted from RM0008) ---
+   4:main.cpp      **** #define PERIPH_BASE     0x40000000UL
+   5:main.cpp      **** #define APB2PERIPH_BASE (PERIPH_BASE + 0x10000UL)
+   6:main.cpp      **** #define RCC_BASE        (PERIPH_BASE + 0x21000UL)
+   7:main.cpp      **** #define GPIOA_BASE      (APB2PERIPH_BASE + 0x0800UL) // Updated to GPIOA (0x40010800)
+   8:main.cpp      **** 
+   9:main.cpp      **** struct RCC_TypeDef {
+  10:main.cpp      ****     volatile uint32_t CR, CFGR, CIR, APB2RSTR, APB1RSTR, AHBENR, APB2ENR, APB1ENR;
+  11:main.cpp      **** };
+  12:main.cpp      **** #define RCC ((RCC_TypeDef*)RCC_BASE)
+  13:main.cpp      **** 
+  14:main.cpp      **** struct GPIO_TypeDef {
+  15:main.cpp      ****     volatile uint32_t CRL, CRH, IDR, ODR, BSRR, BRR, LCKR;
+  16:main.cpp      **** };
+  17:main.cpp      **** #define GPIOA ((GPIO_TypeDef*)GPIOA_BASE)
+  18:main.cpp      **** 
+  19:main.cpp      **** // --- 2. BARE-METAL DRIVERS ---
+  20:main.cpp      **** extern "C" void _init(void) {
+  28              		.loc 1 20 29 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  21:main.cpp      ****     // Dummy function to satisfy newlib's __libc_init_array
+  22:main.cpp      **** }
+  33              		.loc 1 22 1 is_stmt 0 view .LVU1
+  34 0000 7047     		bx	lr
+  35              		.cfi_endproc
+  36              	.LFE2:
+ARM GAS  /tmp/ccOhnMiS.s 			page 2
+
+
+  37              		.cantunwind
+  38              		.fnend
+  40              		.section	.text._Z13gpio_init_pa8v,"ax",%progbits
+  41              		.align	1
+  42              		.global	_Z13gpio_init_pa8v
+  43              		.syntax unified
+  44              		.thumb
+  45              		.thumb_func
+  47              	_Z13gpio_init_pa8v:
+  48              		.fnstart
+  49              	.LFB3:
+  23:main.cpp      **** 
+  24:main.cpp      **** void gpio_init_pa8(void) {
+  50              		.loc 1 24 26 is_stmt 1 view -0
+  51              		.cfi_startproc
+  52              		@ args = 0, pretend = 0, frame = 0
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+  25:main.cpp      ****     RCC->APB2ENR |= (1 << 2);          // Enable GPIOA clock (Bit 2 is IOPAEN)
+  55              		.loc 1 25 5 view .LVU3
+  56              		.loc 1 25 10 is_stmt 0 view .LVU4
+  57 0000 074A     		ldr	r2, .L3
+  58 0002 9369     		ldr	r3, [r2, #24]
+  59              		.loc 1 25 18 view .LVU5
+  60 0004 43F00403 		orr	r3, r3, #4
+  61 0008 9361     		str	r3, [r2, #24]
+  26:main.cpp      ****     
+  27:main.cpp      ****     // PA8 is controlled by the first 4 bits of CRH (Bits 0-3)
+  28:main.cpp      ****     GPIOA->CRH &= ~(0xF << 0);         // Clear PA8 config
+  62              		.loc 1 28 5 is_stmt 1 view .LVU6
+  63              		.loc 1 28 12 is_stmt 0 view .LVU7
+  64 000a 064B     		ldr	r3, .L3+4
+  65 000c 5A68     		ldr	r2, [r3, #4]
+  66              		.loc 1 28 16 view .LVU8
+  67 000e 22F00F02 		bic	r2, r2, #15
+  68 0012 5A60     		str	r2, [r3, #4]
+  29:main.cpp      ****     GPIOA->CRH |=  (0x1 << 0);         // PA8: Output 10MHz Push-Pull (MODE=01, CNF=00)
+  69              		.loc 1 29 5 is_stmt 1 view .LVU9
+  70              		.loc 1 29 12 is_stmt 0 view .LVU10
+  71 0014 5A68     		ldr	r2, [r3, #4]
+  72              		.loc 1 29 16 view .LVU11
+  73 0016 42F00102 		orr	r2, r2, #1
+  74 001a 5A60     		str	r2, [r3, #4]
+  30:main.cpp      **** }
+  75              		.loc 1 30 1 view .LVU12
+  76 001c 7047     		bx	lr
+  77              	.L4:
+  78 001e 00BF     		.align	2
+  79              	.L3:
+  80 0020 00100240 		.word	1073876992
+  81 0024 00080140 		.word	1073809408
+  82              		.cfi_endproc
+  83              	.LFE3:
+  84              		.cantunwind
+  85              		.fnend
+  87              		.section	.text._Z5delaym,"ax",%progbits
+  88              		.align	1
+ARM GAS  /tmp/ccOhnMiS.s 			page 3
+
+
+  89              		.global	_Z5delaym
+  90              		.syntax unified
+  91              		.thumb
+  92              		.thumb_func
+  94              	_Z5delaym:
+  95              		.fnstart
+  96              	.LVL0:
+  97              	.LFB4:
+  31:main.cpp      **** 
+  32:main.cpp      **** void delay(volatile uint32_t count) {
+  98              		.loc 1 32 37 is_stmt 1 view -0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 8
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+ 103              		.loc 1 32 37 is_stmt 0 view .LVU14
+ 104 0000 82B0     		sub	sp, sp, #8
+ 105              	.LCFI0:
+ 106              		.cfi_def_cfa_offset 8
+ 107 0002 0190     		str	r0, [sp, #4]
+  33:main.cpp      ****     while(count--) {
+ 108              		.loc 1 33 5 is_stmt 1 view .LVU15
+ 109 0004 00E0     		b	.L6
+ 110              	.L7:
+  34:main.cpp      ****         __asm__ volatile ("nop");
+ 111              		.loc 1 34 9 view .LVU16
+ 112              		.syntax unified
+ 113              	@ 34 "main.cpp" 1
+ 114 0006 00BF     		nop
+ 115              	@ 0 "" 2
+ 116              		.thumb
+ 117              		.syntax unified
+ 118              	.L6:
+  33:main.cpp      ****     while(count--) {
+ 119              		.loc 1 33 16 view .LVU17
+ 120 0008 019B     		ldr	r3, [sp, #4]
+ 121 000a 5A1E     		subs	r2, r3, #1
+ 122 000c 0192     		str	r2, [sp, #4]
+ 123 000e 002B     		cmp	r3, #0
+ 124 0010 F9D1     		bne	.L7
+  35:main.cpp      ****     }
+  36:main.cpp      **** }
+ 125              		.loc 1 36 1 is_stmt 0 view .LVU18
+ 126 0012 02B0     		add	sp, sp, #8
+ 127              	.LCFI1:
+ 128              		.cfi_def_cfa_offset 0
+ 129              		@ sp needed
+ 130 0014 7047     		bx	lr
+ 131              		.cfi_endproc
+ 132              	.LFE4:
+ 133              		.cantunwind
+ 134              		.fnend
+ 136              		.section	.text.main,"ax",%progbits
+ 137              		.align	1
+ 138              		.global	main
+ 139              		.syntax unified
+ 140              		.thumb
+ARM GAS  /tmp/ccOhnMiS.s 			page 4
+
+
+ 141              		.thumb_func
+ 143              	main:
+ 144              		.fnstart
+ 145              	.LFB5:
+  37:main.cpp      **** 
+  38:main.cpp      **** // --- 3. MAIN APPLICATION ---
+  39:main.cpp      **** extern "C" int main(void) { 
+ 146              		.loc 1 39 27 is_stmt 1 view -0
+ 147              		.cfi_startproc
+ 148              		@ Volatile: function does not return.
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 151 0000 08B5     		push	{r3, lr}
+ 152              	.LCFI2:
+ 153              		.cfi_def_cfa_offset 8
+ 154              		.cfi_offset 3, -8
+ 155              		.cfi_offset 14, -4
+  40:main.cpp      ****     gpio_init_pa8();
+ 156              		.loc 1 40 5 view .LVU20
+ 157              		.loc 1 40 18 is_stmt 0 view .LVU21
+ 158 0002 FFF7FEFF 		bl	_Z13gpio_init_pa8v
+ 159              	.LVL1:
+ 160              	.L10:
+  41:main.cpp      ****     
+  42:main.cpp      ****     while (true) {
+ 161              		.loc 1 42 5 is_stmt 1 view .LVU22
+  43:main.cpp      ****         GPIOA->BSRR = (1 << 8);         // PA8 HIGH (LED ON for Active-High)
+ 162              		.loc 1 43 9 view .LVU23
+ 163              		.loc 1 43 21 is_stmt 0 view .LVU24
+ 164 0006 074D     		ldr	r5, .L12
+ 165 0008 4FF48073 		mov	r3, #256
+ 166 000c 2B61     		str	r3, [r5, #16]
+  44:main.cpp      ****         delay(500000);
+ 167              		.loc 1 44 9 is_stmt 1 view .LVU25
+ 168              		.loc 1 44 14 is_stmt 0 view .LVU26
+ 169 000e 064C     		ldr	r4, .L12+4
+ 170 0010 2046     		mov	r0, r4
+ 171 0012 FFF7FEFF 		bl	_Z5delaym
+ 172              	.LVL2:
+  45:main.cpp      ****         GPIOA->BSRR = (1 << (8 + 16));  // PA8 LOW (LED OFF)
+ 173              		.loc 1 45 9 is_stmt 1 view .LVU27
+ 174              		.loc 1 45 21 is_stmt 0 view .LVU28
+ 175 0016 4FF08073 		mov	r3, #16777216
+ 176 001a 2B61     		str	r3, [r5, #16]
+  46:main.cpp      ****         delay(500000);
+ 177              		.loc 1 46 9 is_stmt 1 discriminator 1 view .LVU29
+ 178              		.loc 1 46 14 is_stmt 0 discriminator 1 view .LVU30
+ 179 001c 2046     		mov	r0, r4
+ 180 001e FFF7FEFF 		bl	_Z5delaym
+ 181              	.LVL3:
+  42:main.cpp      ****         GPIOA->BSRR = (1 << 8);         // PA8 HIGH (LED ON for Active-High)
+ 182              		.loc 1 42 5 is_stmt 1 view .LVU31
+ 183 0022 F0E7     		b	.L10
+ 184              	.L13:
+ 185              		.align	2
+ 186              	.L12:
+ 187 0024 00080140 		.word	1073809408
+ARM GAS  /tmp/ccOhnMiS.s 			page 5
+
+
+ 188 0028 20A10700 		.word	500000
+ 189              		.cfi_endproc
+ 190              	.LFE5:
+ 191              		.cantunwind
+ 192              		.fnend
+ 194              		.text
+ 195              	.Letext0:
+ 196              		.file 2 "/usr/include/newlib/c++/13.2.1/cstdint"
+ 197              		.file 3 "/usr/include/newlib/c++/13.2.1/arm-none-eabi/thumb/v7-m/nofp/bits/c++config.h"
+ 198              		.file 4 "/usr/lib/gcc/arm-none-eabi/13.2.1/include/stdint.h"
+ARM GAS  /tmp/ccOhnMiS.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.cpp
+     /tmp/ccOhnMiS.s:19     .text._init:00000000 $t
+     /tmp/ccOhnMiS.s:25     .text._init:00000000 _init
+            .ARM.exidx.text._init:00000000 $d
+     /tmp/ccOhnMiS.s:41     .text._Z13gpio_init_pa8v:00000000 $t
+     /tmp/ccOhnMiS.s:47     .text._Z13gpio_init_pa8v:00000000 _Z13gpio_init_pa8v
+     /tmp/ccOhnMiS.s:80     .text._Z13gpio_init_pa8v:00000020 $d
+.ARM.exidx.text._Z13gpio_init_pa8v:00000000 $d
+     /tmp/ccOhnMiS.s:88     .text._Z5delaym:00000000 $t
+     /tmp/ccOhnMiS.s:94     .text._Z5delaym:00000000 _Z5delaym
+        .ARM.exidx.text._Z5delaym:00000000 $d
+     /tmp/ccOhnMiS.s:137    .text.main:00000000 $t
+     /tmp/ccOhnMiS.s:143    .text.main:00000000 main
+     /tmp/ccOhnMiS.s:187    .text.main:00000024 $d
+             .ARM.exidx.text.main:00000000 $d
+
+NO UNDEFINED SYMBOLS
